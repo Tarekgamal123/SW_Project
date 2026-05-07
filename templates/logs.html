@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سجل الأحداث</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            direction: rtl;
+            font-family: 'Cairo', sans-serif;
+            min-height: 100vh;
+            padding: 2rem;
+            color: #f8fafc;
+
+            background:
+                radial-gradient(circle at top left, rgba(59, 130, 246, 0.18), transparent 25%),
+                radial-gradient(circle at bottom right, rgba(37, 99, 235, 0.15), transparent 25%),
+                linear-gradient(135deg, #020617, #0f172a);
+        }
+
+        .container {
+            max-width: 1500px;
+            margin: auto;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+
+            font-size: 2.2rem;
+            font-weight: 800;
+
+            background: linear-gradient(90deg, #60a5fa, #3b82f6, #2563eb);
+
+            -webkit-background-clip: text;
+            background-clip: text;
+
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+        }
+
+        .page-header p {
+            color: #94a3b8;
+            margin-top: 0.6rem;
+        }
+
+        .filter-card,
+        .table-card {
+            background: rgba(15, 23, 42, 0.82);
+
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+
+            border-radius: 30px;
+
+            border: 1px solid rgba(255, 255, 255, 0.08);
+
+            box-shadow:
+                0 10px 40px rgba(0, 0, 0, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+            margin-bottom: 2rem;
+        }
+
+        .filter-card {
+            padding: 1.5rem;
+        }
+
+        .filter-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+
+            color: #94a3b8;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        input,
+        select {
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+
+            background: rgba(2, 6, 23, 0.7);
+
+            padding: 0.9rem 1rem;
+
+            border-radius: 16px;
+
+            color: white;
+
+            outline: none;
+
+            transition: 0.25s ease;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+        }
+
+        button {
+            border: none;
+            cursor: pointer;
+
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+
+            color: white;
+
+            padding: 0.9rem 1.4rem;
+
+            border-radius: 16px;
+
+            font-weight: 700;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+
+            transition: 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.35);
+        }
+
+        .table-card {
+            padding: 1.2rem;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 24px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+
+            overflow: hidden;
+
+            background: rgba(2, 6, 23, 0.65);
+
+            border-radius: 24px;
+        }
+
+        thead {
+            background: linear-gradient(90deg, #2563eb, #1d4ed8);
+        }
+
+        th {
+            padding: 1rem;
+
+            text-align: right;
+
+            color: white;
+
+            font-size: 0.92rem;
+            font-weight: 700;
+        }
+
+        td {
+            padding: 1rem;
+
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+            color: #e2e8f0;
+
+            transition: 0.25s ease;
+        }
+
+        tbody tr {
+            transition: 0.25s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(59, 130, 246, 0.08);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        code {
+            background: rgba(59, 130, 246, 0.12);
+
+            color: #93c5fd;
+
+            padding: 0.3rem 0.6rem;
+
+            border-radius: 10px;
+
+            font-size: 0.85rem;
+        }
+
+        .badge {
+            padding: 0.35rem 0.8rem;
+
+            border-radius: 50px;
+
+            font-size: 0.75rem;
+            font-weight: 700;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .badge-success {
+            background: rgba(34, 197, 94, 0.15);
+            color: #4ade80;
+            border: 1px solid rgba(74, 222, 128, 0.2);
+        }
+
+        .badge-danger {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(248, 113, 113, 0.2);
+        }
+
+        .details-cell {
+            max-width: 250px;
+
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+
+            margin-top: 2rem;
+        }
+
+        .pagination a,
+        .pagination span {
+            min-width: 42px;
+            height: 42px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 14px;
+
+            text-decoration: none;
+
+            background: rgba(15, 23, 42, 0.85);
+
+            color: #e2e8f0;
+
+            font-weight: 700;
+
+            border: 1px solid rgba(255, 255, 255, 0.06);
+
+            transition: 0.25s ease;
+        }
+
+        .pagination a:hover {
+            transform: translateY(-2px);
+            background: rgba(37, 99, 235, 0.2);
+        }
+
+        .pagination a.active {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #2563eb;
+            border-radius: 20px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+
+        @media (max-width: 850px) {
+
+            body {
+                padding: 1rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.6rem;
+            }
+
+            th,
+            td {
+                font-size: 0.82rem;
+                padding: 0.8rem;
+            }
+
+            .filter-form {
+                grid-template-columns: 1fr;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="page-header">
+
+            <h1>
+                <i class="fas fa-history"></i>
+                سجل الأحداث
+            </h1>
+
+            <p>
+                مراقبة وتحليل جميع السجلات والأنشطة داخل النظام
+            </p>
+
+        </div>
+
+        <div class="filter-card">
+
+            <form method="GET" class="filter-form">
+
+                <div class="filter-group">
+
+                    <label>
+                        IP المصدر
+                    </label>
+
+                    <input
+                        name="src_ip"
+                        value="{{ src_ip }}"
+                        placeholder="مثال: 192.168.1.1">
+
+                </div>
+
+                <div class="filter-group">
+
+                    <label>
+                        الحالة
+                    </label>
+
+                    <select name="status">
+
+                        <option value="">
+                            الكل
+                        </option>
+
+                        <option {% if selected_status == 'success' %}selected{% endif %}>
+                            success
+                        </option>
+
+                        <option {% if selected_status == 'failed' %}selected{% endif %}>
+                            failed
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="filter-group">
+
+                    <button type="submit">
+
+                        <i class="fas fa-search"></i>
+                        بحث
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+        <div class="table-card">
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>#</th>
+                            <th>التوقيت</th>
+                            <th>IP</th>
+                            <th>المستخدم</th>
+                            <th>الحدث</th>
+                            <th>الحالة</th>
+                            <th>المسار</th>
+                            <th>التفاصيل</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for log in logs.items %}
+
+                        <tr>
+
+                            <td>{{ log.id }}</td>
+
+                            <td>
+                                {{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}
+                            </td>
+
+                            <td>
+                                <code>{{ log.src_ip }}</code>
+                            </td>
+
+                            <td>
+                                {{ log.username or '-' }}
+                            </td>
+
+                            <td>
+                                {{ log.event_type }}
+                            </td>
+
+                            <td>
+
+                                {% if log.status == 'success' %}
+
+                                <span class="badge badge-success">
+                                    success
+                                </span>
+
+                                {% elif log.status == 'failed' %}
+
+                                <span class="badge badge-danger">
+                                    failed
+                                </span>
+
+                                {% else %}
+
+                                {{ log.status or '-' }}
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+                                {{ log.request_path or '-' }}
+                                {{ log.method or '' }}
+                            </td>
+
+                            <td class="details-cell">
+                                {{ (log.details or '')[:80] }}
+                            </td>
+
+                        </tr>
+
+                        {% else %}
+
+                        <tr>
+
+                            <td colspan="8">
+                                لا توجد سجلات
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <div class="pagination">
+
+            {% if logs.has_prev %}
+
+            <a href="{{ url_for('view_logs', page=logs.prev_num, src_ip=src_ip, status=selected_status) }}">
+
+                السابق
+
+            </a>
+
+            {% endif %}
+
+            {% for p in logs.iter_pages() %}
+
+            {% if p %}
+
+            <a
+                href="{{ url_for('view_logs', page=p, src_ip=src_ip, status=selected_status) }}"
+                class="{% if p == logs.page %}active{% endif %}">
+
+                {{ p }}
+
+            </a>
+
+            {% else %}
+
+            <span>...</span>
+
+            {% endif %}
+
+            {% endfor %}
+
+            {% if logs.has_next %}
+
+            <a href="{{ url_for('view_logs', page=logs.next_num, src_ip=src_ip, status=selected_status) }}">
+
+                التالي
+
+            </a>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

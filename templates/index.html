@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحليل السجلات</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            direction: rtl;
+            font-family: 'Cairo', sans-serif;
+            min-height: 100vh;
+            padding: 2rem;
+            color: #f8fafc;
+
+            background:
+                radial-gradient(circle at top left, rgba(59, 130, 246, 0.18), transparent 25%),
+                radial-gradient(circle at bottom right, rgba(37, 99, 235, 0.15), transparent 25%),
+                linear-gradient(135deg, #020617, #0f172a);
+        }
+
+        .container {
+            max-width: 1450px;
+            margin: auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .header h1 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            margin-bottom: 0.7rem;
+
+            background: linear-gradient(90deg, #60a5fa, #3b82f6, #2563eb);
+
+            -webkit-background-clip: text;
+            background-clip: text;
+
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+        }
+
+        .header p {
+            color: #94a3b8;
+            font-size: 1rem;
+        }
+
+        .header i {
+            margin-left: 0.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.4rem;
+            margin-bottom: 2.2rem;
+        }
+
+        .stat-card {
+            background: rgba(15, 23, 42, 0.82);
+
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+
+            border-radius: 30px;
+            padding: 1.5rem;
+
+            border: 1px solid rgba(255, 255, 255, 0.08);
+
+            transition: 0.3s ease;
+
+            box-shadow:
+                0 10px 40px rgba(0, 0, 0, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+
+        .stat-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 18px;
+
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 1.2rem;
+            color: white;
+
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.35);
+        }
+
+        .stat-title {
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+
+        .stat-number {
+            font-size: 2.4rem;
+            font-weight: 800;
+            margin-top: 0.3rem;
+            color: white;
+        }
+
+        .success-color {
+            color: #4ade80;
+        }
+
+        .failed-color {
+            color: #f87171;
+        }
+
+        .warning-color {
+            color: #facc15;
+        }
+
+        .card {
+            background: rgba(15, 23, 42, 0.85);
+
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+
+            border-radius: 30px;
+            overflow: hidden;
+
+            border: 1px solid rgba(255, 255, 255, 0.08);
+
+            margin-bottom: 2rem;
+
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+        }
+
+        .card-header {
+            padding: 1.3rem 1.6rem;
+
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+
+            font-size: 1.05rem;
+            font-weight: 700;
+
+            background: rgba(2, 6, 23, 0.65);
+
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .card-header i {
+            color: #3b82f6;
+        }
+
+        .list-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .list-group-item {
+            padding: 1rem 1.5rem;
+
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+            transition: 0.25s ease;
+        }
+
+        .list-group-item:hover {
+            background: rgba(59, 130, 246, 0.06);
+        }
+
+        .list-group-item:last-child {
+            border-bottom: none;
+        }
+
+        .badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 50px;
+
+            font-size: 0.75rem;
+            font-weight: 700;
+
+            min-width: 85px;
+            text-align: center;
+        }
+
+        .badge-critical {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(248, 113, 113, 0.25);
+        }
+
+        .badge-high {
+            background: rgba(249, 115, 22, 0.15);
+            color: #fb923c;
+            border: 1px solid rgba(251, 146, 60, 0.25);
+        }
+
+        .badge-medium {
+            background: rgba(250, 204, 21, 0.15);
+            color: #fde047;
+            border: 1px solid rgba(253, 224, 71, 0.25);
+        }
+
+        .badge-low {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(96, 165, 250, 0.25);
+        }
+
+        .alert-time {
+            margin-right: auto;
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+
+            margin-top: 2.2rem;
+        }
+
+        .btn {
+            text-decoration: none;
+
+            display: inline-flex;
+            align-items: center;
+            gap: 0.7rem;
+
+            padding: 0.9rem 1.5rem;
+
+            border-radius: 18px;
+
+            font-weight: 700;
+            color: white;
+
+            transition: 0.3s ease;
+
+            border: 1px solid rgba(255, 255, 255, 0.08);
+
+            background: rgba(15, 23, 42, 0.85);
+
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.25);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+        }
+
+        .btn i {
+            font-size: 0.95rem;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #2563eb;
+            border-radius: 20px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+
+        @media (max-width: 850px) {
+
+            body {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.7rem;
+            }
+
+            .stat-number {
+                font-size: 2rem;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .list-group-item {
+                align-items: flex-start;
+            }
+
+            .alert-time {
+                width: 100%;
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="header">
+
+            <h1>
+                <i class="fas fa-shield-alt"></i>
+                تحليل السجلات الأمنية
+            </h1>
+
+            <p>
+                رفع الملفات • كشف الهجمات • مراقبة السجلات • تحليل النشاط الأمني
+            </p>
+
+        </div>
+
+        <div class="stats-grid">
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <div>
+                        <div class="stat-title">
+                            إجمالي Logs
+                        </div>
+
+                        <div class="stat-number">
+                            {{ total_logs }}
+                        </div>
+                    </div>
+
+                    <div class="stat-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <div>
+                        <div class="stat-title">
+                            نجاح العمليات
+                        </div>
+
+                        <div class="stat-number success-color">
+                            {{ success_logs }}
+                        </div>
+                    </div>
+
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <div>
+                        <div class="stat-title">
+                            العمليات الفاشلة
+                        </div>
+
+                        <div class="stat-number failed-color">
+                            {{ failed_logs }}
+                        </div>
+                    </div>
+
+                    <div class="stat-icon">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <div>
+                        <div class="stat-title">
+                            إجمالي التنبيهات
+                        </div>
+
+                        <div class="stat-number warning-color">
+                            {{ total_alerts }}
+                        </div>
+                    </div>
+
+                    <div class="stat-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <i class="fas fa-bell"></i>
+                آخر التنبيهات
+
+            </div>
+
+            <div class="list-group">
+
+                {% for a in recent_alerts %}
+
+                <div class="list-group-item">
+
+                    <span class="badge {% if a.severity == 'Critical' %}badge-critical{% elif a.severity == 'High' %}badge-high{% elif a.severity == 'Medium' %}badge-medium{% else %}badge-low{% endif %}">
+
+                        {{ a.severity }}
+
+                    </span>
+
+                    <span>
+                        {{ a.description }}
+                    </span>
+
+                    <small class="alert-time">
+
+                        {{ a.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}
+
+                    </small>
+
+                </div>
+
+                {% else %}
+
+                <div class="list-group-item">
+                    لا توجد تنبيهات
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <i class="fas fa-fire"></i>
+                أكثر الـ IPs هجومًا
+
+            </div>
+
+            <div class="list-group">
+
+                {% for ip, count in top_attackers %}
+
+                <div class="list-group-item">
+
+                    <i class="fas fa-network-wired"
+                        style="color:#60a5fa;"></i>
+
+                    <span>
+                        {{ ip }}
+                    </span>
+
+                    <span style="color:#94a3b8;">
+                        — {{ count }} تنبيه
+                    </span>
+
+                </div>
+
+                {% else %}
+
+                <div class="list-group-item">
+                    لا توجد بيانات
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+        <div class="btn-group">
+
+            <a href="/logs" class="btn btn-secondary">
+
+                <i class="fas fa-list"></i>
+                عرض Logs
+
+            </a>
+
+            <a href="/alerts" class="btn btn-danger">
+
+                <i class="fas fa-exclamation-triangle"></i>
+                التنبيهات
+
+            </a>
+
+            <a href="/submit_log" class="btn btn-primary">
+
+                <i class="fas fa-plus-circle"></i>
+                إرسال Log يدوي
+
+            </a>
+
+            <a href="/upload_logs" class="btn btn-secondary">
+
+                <i class="fas fa-upload"></i>
+                رفع ملف Logs
+
+            </a>
+
+            <a href="/devices" class="btn btn-secondary">
+
+                <i class="fas fa-network-wired"></i>
+                الأجهزة المستخرجة
+
+            </a>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

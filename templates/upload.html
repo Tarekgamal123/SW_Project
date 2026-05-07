@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>رفع ملف Logs</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            direction: rtl;
+            font-family: 'Cairo', sans-serif;
+
+            min-height: 100vh;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 2rem;
+
+            background:
+                radial-gradient(circle at top left, rgba(59, 130, 246, 0.18), transparent 25%),
+                radial-gradient(circle at bottom right, rgba(37, 99, 235, 0.15), transparent 25%),
+                linear-gradient(135deg, #020617, #0f172a);
+
+            color: #f8fafc;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 700px;
+
+            background: rgba(15, 23, 42, 0.85);
+
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+
+            border-radius: 34px;
+
+            padding: 2rem;
+
+            border: 1px solid rgba(255, 255, 255, 0.08);
+
+            box-shadow:
+                0 10px 40px rgba(0, 0, 0, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h2 {
+            font-size: 2rem;
+            font-weight: 800;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+
+            background: linear-gradient(90deg, #60a5fa, #3b82f6, #2563eb);
+
+            -webkit-background-clip: text;
+            background-clip: text;
+
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+        }
+
+        .header p {
+            color: #94a3b8;
+            margin-top: 0.7rem;
+            font-size: 0.95rem;
+        }
+
+        .alert {
+            background: rgba(34, 197, 94, 0.12);
+
+            border: 1px solid rgba(74, 222, 128, 0.2);
+
+            color: #d1fae5;
+
+            padding: 1.3rem;
+
+            border-radius: 22px;
+
+            margin-bottom: 1.7rem;
+
+            line-height: 1.9;
+        }
+
+        .alert strong {
+            color: #4ade80;
+        }
+
+        .alert hr {
+            border: none;
+            height: 1px;
+
+            background: rgba(255, 255, 255, 0.08);
+
+            margin: 1rem 0;
+        }
+
+        .alert small {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        ul {
+            margin-top: 0.8rem;
+
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+
+            list-style: none;
+        }
+
+        ul li {
+            background: rgba(2, 6, 23, 0.55);
+
+            border: 1px solid rgba(255, 255, 255, 0.05);
+
+            padding: 0.8rem 1rem;
+
+            border-radius: 14px;
+
+            color: #e2e8f0;
+        }
+
+        .upload-box {
+            border: 2px dashed rgba(59, 130, 246, 0.35);
+
+            border-radius: 24px;
+
+            padding: 2rem;
+
+            text-align: center;
+
+            background: rgba(2, 6, 23, 0.45);
+
+            transition: 0.3s ease;
+        }
+
+        .upload-box:hover {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .upload-icon {
+            width: 80px;
+            height: 80px;
+
+            border-radius: 24px;
+
+            margin: auto auto 1rem;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+
+            color: white;
+
+            font-size: 2rem;
+
+            box-shadow: 0 12px 25px rgba(37, 99, 235, 0.35);
+        }
+
+        .upload-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-subtitle {
+            color: #94a3b8;
+            font-size: 0.9rem;
+
+            margin-bottom: 1.5rem;
+        }
+
+        input[type="file"] {
+            width: 100%;
+
+            background: rgba(15, 23, 42, 0.85);
+
+            border: 1px solid rgba(255, 255, 255, 0.08);
+
+            padding: 1rem;
+
+            border-radius: 18px;
+
+            color: white;
+
+            cursor: pointer;
+
+            margin-bottom: 1rem;
+        }
+
+        input[type="file"]::file-selector-button {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+
+            border: none;
+
+            padding: 0.7rem 1rem;
+
+            border-radius: 12px;
+
+            color: white;
+
+            margin-left: 1rem;
+
+            cursor: pointer;
+
+            font-weight: 700;
+        }
+
+        .submit-btn {
+            width: 100%;
+
+            border: none;
+
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+
+            color: white;
+
+            padding: 1rem;
+
+            border-radius: 18px;
+
+            font-size: 1rem;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.7rem;
+
+            transition: 0.3s ease;
+
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.35);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+
+            box-shadow: 0 14px 30px rgba(37, 99, 235, 0.45);
+        }
+
+        .back-link {
+            margin-top: 1.5rem;
+
+            text-align: center;
+        }
+
+        .back-link a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+
+            color: #93c5fd;
+
+            text-decoration: none;
+
+            font-weight: 700;
+
+            transition: 0.25s ease;
+        }
+
+        .back-link a:hover {
+            color: white;
+            transform: translateX(-3px);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #2563eb;
+            border-radius: 20px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+
+        @media (max-width: 768px) {
+
+            body {
+                padding: 1rem;
+            }
+
+            .card {
+                padding: 1.4rem;
+            }
+
+            .header h2 {
+                font-size: 1.5rem;
+            }
+
+            .upload-box {
+                padding: 1.4rem;
+            }
+
+            .upload-icon {
+                width: 65px;
+                height: 65px;
+
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+
+        <div class="header">
+
+            <h2>
+
+                <i class="fas fa-cloud-upload-alt"></i>
+                رفع وتحليل السجلات
+
+            </h2>
+
+            <p>
+                قم برفع ملفات الـ Logs وتحليل النشاط الأمني واكتشاف التهديدات
+            </p>
+
+        </div>
+
+        {% if stats %}
+
+        <div class="alert">
+
+            ✅ تمت معالجة
+            <strong>{{ stats.total_lines }}</strong>
+            سطر من
+            <strong>{{ stats.filename }}</strong>
+
+            <br>
+
+            ✅ نجاح:
+            <strong>{{ stats.success }}</strong>
+
+            |
+            ❌ فشل:
+            <strong>{{ stats.failed }}</strong>
+
+            |
+            🚨 تنبيهات:
+            <strong>{{ stats.alerts }}</strong>
+
+            {% if stats.paths %}
+
+            <hr>
+
+            <div>
+
+                <small>
+                    المسارات الأكثر طلباً:
+                </small>
+
+                <ul>
+
+                    {% for path,count in stats.paths.items() %}
+
+                    <li>
+
+                        {{ path }}
+                        ({{ count }})
+
+                    </li>
+
+                    {% endfor %}
+
+                </ul>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data">
+
+            <div class="upload-box">
+
+                <div class="upload-icon">
+
+                    <i class="fas fa-file-upload"></i>
+
+                </div>
+
+                <div class="upload-title">
+
+                    اختر ملف الـ Logs
+
+                </div>
+
+                <div class="upload-subtitle">
+
+                    الصيغ المدعومة:
+                    .log / .txt / .csv
+
+                </div>
+
+                <input
+                    type="file"
+                    name="file"
+                    accept=".log,.txt,.csv"
+                    required>
+
+            </div>
+
+            <button
+                type="submit"
+                class="submit-btn">
+
+                <i class="fas fa-chart-line"></i>
+                رفع وتحليل
+
+            </button>
+
+        </form>
+
+        <div class="back-link">
+
+            <a href="/">
+
+                <i class="fas fa-arrow-right"></i>
+                العودة للوحة التحكم
+
+            </a>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>
