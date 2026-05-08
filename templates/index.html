@@ -577,6 +577,45 @@
 
     </div>
 
+    <!-- Auto Refresh للوحة التحكم -->
+    <script>
+        // تحديث تلقائي كل 25 ثانية (يمكنك تغيير الرقم)
+        let refreshInterval = 25 * 1000; 
+        
+        function autoRefresh() {
+            window.location.reload();
+        }
+
+        // بدء التحديث التلقائي
+        setTimeout(() => {
+            autoRefresh();
+        }, refreshInterval);
+
+        // إضافة زر تحديث يدوي في الأعلى (اختياري لكن مفيد)
+        document.addEventListener("DOMContentLoaded", function() {
+            const header = document.querySelector('.header');
+            if (header) {
+                const refreshBtn = document.createElement('button');
+                refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> تحديث الآن';
+                refreshBtn.style.cssText = `
+                    position: absolute; 
+                    top: 20px; 
+                    left: 20px; 
+                    padding: 8px 16px; 
+                    background: #2563eb; 
+                    color: white; 
+                    border: none; 
+                    border-radius: 12px; 
+                    cursor: pointer;
+                    font-weight: 600;
+                `;
+                refreshBtn.onclick = () => window.location.reload();
+                header.style.position = 'relative';
+                header.appendChild(refreshBtn);
+            }
+        });
+    </script>
+
 </body>
 
 </html>
