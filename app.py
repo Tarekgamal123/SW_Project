@@ -212,26 +212,68 @@ def create_app(config_name='default'):
                 event_type=form.event_type.data,
                 status=form.status.data,
                 details=form.details.data,
+                request_path=form.request_path.data,
+                method=form.method.data,
                 timestamp=datetime.utcnow()
             )
             db.session.add(log)
             db.session.commit()
 
+            # تطبيق قواعد الكشف
             alerts = apply_detection_rules(log)
             for a in alerts:
                 db.session.add(a)
             db.session.commit()
 
-            flash('تم إضافة السجل بنجاح', 'success')
+            flash('تم إضافة السجل بنجاح ✅', 'success')
             return redirect(url_for('dashboard'))
+        
         return render_template('submit_log.html', form=form)
 
     @app.route('/logs')
     @login_required
     def view_logs():
         page = request.args.get('page', 1, type=int)
-        logs = Log.query.order_by(Log.timestamp.desc()).paginate(page=page, per_page=20, error_out=False)
-        return render_template('logs.html', logs=logs)
+        
+        # قراءة الفلاتر
+        src_ip = request.args.get('src_ip', '').strip()
+        status = request.args.get('status', '').strip()
+        from_date = request.args.get('from_date')
+        to_date = request.args.get('to_date')
+        
+        # بناء الاستعلام
+        query = Log.query.order_by(Log.timestamp.desc())
+        
+        if src_ip:
+            query = query.filter(Log.src_ip.like(f'%{src_ip}%'))
+        
+        if status:
+            query = query.filter(Log.status == status)
+        
+        # فلتر التاريخ
+        if from_date:
+            try:
+                from_dt = datetime.strptime(from_date, '%Y-%m-%d')
+                query = query.filter(Log.timestamp >= from_dt)
+            except:
+                pass
+        
+        if to_date:
+            try:
+                to_dt = datetime.strptime(to_date, '%Y-%m-%d')
+                to_dt = to_dt.replace(hour=23, minute=59, second=59)  # نهاية اليوم
+                query = query.filter(Log.timestamp <= to_dt)
+            except:
+                pass
+        
+        logs = query.paginate(page=page, per_page=20, error_out=False)
+        
+        return render_template('logs.html', 
+                            logs=logs,
+                            src_ip=src_ip,
+                            selected_status=status,
+                            from_date=from_date,
+                            to_date=to_date)
 
     @app.route('/alerts')
     @login_required
