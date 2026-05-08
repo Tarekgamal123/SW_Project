@@ -12,11 +12,17 @@ class SubmitLogForm(FlaskForm):
     src_ip = StringField('Source IP', validators=[DataRequired()])
     username = StringField('Username', validators=[Optional()])
     event_type = SelectField('Event Type', choices=[
-        ('login', 'Login'), ('web_request', 'Web Request'),
-        ('error', 'Error'), ('other', 'Other')
+        ('login', 'Login'), 
+        ('web_request', 'Web Request'),
+        ('error', 'Error'), 
+        ('other', 'Other')
     ], validators=[DataRequired()])
     status = SelectField('Status', choices=[
-        ('success', 'Success'), ('failed', 'Failed'), ('error', 'Error')
+        ('success', 'Success'), 
+        ('failed', 'Failed'), 
+        ('error', 'Error')
     ], validators=[DataRequired()])
+    request_path = StringField('Request Path', validators=[Optional()])
+    method = StringField('Method', validators=[Optional()])
     details = TextAreaField('Details')
-    submit = SubmitField('Submit Log')
+    submit = SubmitField('إرسال الـ Log')
