@@ -360,55 +360,45 @@
             <form method="GET" class="filter-form">
 
                 <div class="filter-group">
-
-                    <label>
-                        IP المصدر
-                    </label>
-
-                    <input
-                        name="src_ip"
-                        value="{{ src_ip }}"
+                    <label>IP المصدر</label>
+                    <input 
+                        name="src_ip" 
+                        value="{{ src_ip | default('') }}" 
                         placeholder="مثال: 192.168.1.1">
-
                 </div>
 
                 <div class="filter-group">
-
-                    <label>
-                        الحالة
-                    </label>
-
+                    <label>الحالة</label>
                     <select name="status">
-
-                        <option value="">
-                            الكل
-                        </option>
-
-                        <option {% if selected_status == 'success' %}selected{% endif %}>
-                            success
-                        </option>
-
-                        <option {% if selected_status == 'failed' %}selected{% endif %}>
-                            failed
-                        </option>
-
+                        <option value="">الكل</option>
+                        <option value="success" {% if selected_status == 'success' %}selected{% endif %}>success</option>
+                        <option value="failed" {% if selected_status == 'failed' %}selected{% endif %}>failed</option>
                     </select>
-
                 </div>
 
                 <div class="filter-group">
+                    <label>من تاريخ</label>
+                    <input 
+                        type="date" 
+                        name="from_date" 
+                        value="{{ from_date }}">
+                </div>
 
+                <div class="filter-group">
+                    <label>إلى تاريخ</label>
+                    <input 
+                        type="date" 
+                        name="to_date" 
+                        value="{{ to_date }}">
+                </div>
+
+                <div class="filter-group">
                     <button type="submit">
-
-                        <i class="fas fa-search"></i>
-                        بحث
-
+                        <i class="fas fa-search"></i> بحث
                     </button>
-
                 </div>
 
             </form>
-
         </div>
 
         <div class="table-card">
